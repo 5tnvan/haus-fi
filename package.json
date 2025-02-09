@@ -55,5 +55,9 @@
   },
   "engines": {
     "node": ">=18.18.0"
+  },
+  "dependencies": {
+    "@safe-global/protocol-kit": "^5.2.1",
+    "ethers": "^5.7.2"
   }
 }
