@@ -58,6 +58,8 @@
   },
   "dependencies": {
     "@safe-global/protocol-kit": "^5.2.1",
+    "@supabase/ssr": "^0.5.2",
+    "@supabase/supabase-js": "^2.48.1",
     "ethers": "^5.7.2"
   }
 }

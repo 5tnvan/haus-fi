@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { FundHaus } from "./fund-haus";
 import Safe, { SafeAccountConfig, getSafeAddressFromDeploymentTx } from "@safe-global/protocol-kit";
 import { SafeVersion } from "@safe-global/types-kit";
 import semverSatisfies from "semver/functions/satisfies";
@@ -8,6 +9,8 @@ import { waitForTransactionReceipt } from "viem/actions";
 import { baseSepolia } from "viem/chains";
 import { useAccount, useWalletClient } from "wagmi";
 import { Address } from "~~/components/scaffold-eth";
+import { createHaus } from "~~/utils/crud/crud-haus";
+import { getPublicURL, uploadProfileAvatar } from "~~/utils/crud/crud-profile-pic";
 
 interface Config {
   RPC_URL: string;
@@ -35,11 +38,23 @@ export const CreateHaus = () => {
   const { address: connectedAddress } = useAccount();
   const { data: walletClient } = useWalletClient();
   const [safeAddress, setSafeAddress] = useState<string | null>(null);
-  const [threshold, setThreshold] = useState<number>(1);
   const [isDeploying, setIsDeploying] = useState(false);
+  const [title, setTitle] = useState("");
+  const [description, setDescription] = useState("");
+  const [profilePic, setProfilePic] = useState<File | null>(null);
+  const [profilePicPreview, setProfilePicPreview] = useState<string | null>(null);
+  const [success, setSuccess] = useState<boolean>(false);
 
-  const createWallet = async (event: React.MouseEvent<HTMLButtonElement>) => {
-    event.preventDefault();
+  const handleProfilePicChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file) {
+      setProfilePic(file);
+      setProfilePicPreview(URL.createObjectURL(file));
+    }
+  };
+
+  const handleCreateWallet = async (event?: React.MouseEvent<HTMLButtonElement>) => {
+    if (event) event.preventDefault();
     if (!walletClient || !connectedAddress) {
       alert("Please connect your wallet.");
       return;
@@ -121,53 +136,132 @@ export const CreateHaus = () => {
     console.log("Safe Threshold:", await protocolKit.getThreshold());
 
     setIsDeploying(false);
+    return safeAddress;
   };
 
+  const handleFileSave = async () => {
+    if (profilePic) {
+      //set up file
+      const fileData = new FormData();
+      fileData.append("file", profilePic);
+
+      // upload new avatar
+      const data1 = await uploadProfileAvatar(fileData, "dummy_multisig_id");
+
+      // update profile table
+      const data2 = await getPublicURL(data1?.path);
+      return data2.publicUrl;
+    }
+  };
+
+  const handleCreateHaus = async () => {
+    // Ensure required fields are provided
+    if (!title || !description) {
+      throw new Error("Title and description are required.");
+    }
+
+    if (!connectedAddress) {
+      throw new Error("Wallet connection is required.");
+    }
+
+    // Deploy wallet and get multisig_id
+    const multisig_id = await handleCreateWallet();
+    if (!multisig_id) {
+      throw new Error("Failed to create multisig wallet.");
+    }
+
+    // Save the profile picture and ensure it's uploaded
+    const profile_pic_url = await handleFileSave();
+    if (!profile_pic_url) {
+      throw new Error("Profile picture is required.");
+    }
+
+    // Create the Haus entry
+    const res = await createHaus(multisig_id, title, description, profile_pic_url, connectedAddress);
+    if (res) {
+      setSuccess(true);
+    }
+    console.log("Haus created successfully:", res);
+  };
   return (
-    <div className="flex items-center flex-col flex-grow pt-10">
-      <div className="px-5">
-        <h1 className="text-center">
-          <span className="block text-4xl font-bold">Create a HAUS</span>
-        </h1>
-        <div className="flex items-center p-4 mb-4 text-sm text-blue-800 border border-blue-300 rounded-lg bg-blue-50">
-          <svg className="shrink-0 inline w-4 h-4 me-3" fill="currentColor" viewBox="0 0 20 20">
-            <path d="M10 .5a9.5 9.5 0 1 0 9.5 9.5A9.51 9.51 0 0 0 10 .5ZM9.5 4a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3ZM12 15H8a1 1 0 0 1 0-2h1v-3H8a1 1 0 0 1 0-2h2a1 1 0 0 1 1 1v4h1a1 1 0 0 1 0 2Z" />
-          </svg>
-          <span className="sr-only">Info</span>
-          <div>
-            {`Let's`} build a new <span className="font-medium">haus</span> by creating a{" "}
-            <span className="font-medium">multisig account.</span>
+    <>
+      {success ? (
+        <FundHaus />
+      ) : (
+        <div className="flex items-center flex-col flex-grow py-10">
+          <div className="px-5 max-w-md w-full">
+            <h1 className="text-center text-4xl font-bold mb-6">Create a HAUS</h1>
+
+            {/* Profile Picture Upload */}
+            <label className="flex flex-col items-center cursor-pointer">
+              <div className="w-24 h-24 rounded-full border-2 border-gray-300 flex items-center justify-center overflow-hidden">
+                {profilePicPreview ? (
+                  <img src={profilePicPreview} alt="Profile" className="w-full h-full object-cover" />
+                ) : (
+                  <span className="text-gray-500">+</span>
+                )}
+              </div>
+              <input type="file" accept="image/*" className="hidden" onChange={handleProfilePicChange} />
+              <p className="mt-2 text-sm text-gray-600">Click to upload profile picture</p>
+            </label>
+
+            {/* Title Input */}
+            <div className="mt-4">
+              <label className="block text-sm font-medium">Title</label>
+              <input
+                type="text"
+                className="w-full p-2 border rounded"
+                placeholder="Enter HAUS title"
+                value={title}
+                onChange={e => setTitle(e.target.value)}
+              />
+            </div>
+
+            {/* Description Input */}
+            <div className="mt-4">
+              <label className="block text-sm font-medium">Description</label>
+              <textarea
+                className="w-full p-2 border rounded"
+                placeholder="Enter description"
+                value={description}
+                onChange={e => setDescription(e.target.value)}
+              />
+            </div>
+
+            {/* Signer (Connected Wallet) */}
+            <div className="mt-4">
+              <label className="block text-sm font-medium">Signer</label>
+              <Address address={connectedAddress} />
+            </div>
+
+            {/* Threshold (Fixed at 1) */}
+            <div className="mt-4">
+              <label className="block text-sm font-medium">Threshold</label>
+              <select className="w-full p-2 border rounded bg-gray-100" value="1" disabled>
+                <option value="1">1 (Single signer)</option>
+              </select>
+            </div>
+
+            {/* Create Haus Button */}
+            <button
+              type="button"
+              className="mt-6 text-white bg-blue-700 hover:bg-blue-800 font-medium rounded-lg text-sm w-full px-5 py-2.5"
+              onClick={handleCreateHaus}
+              disabled={isDeploying}
+            >
+              {isDeploying ? "Deploying..." : "Create Haus"}
+            </button>
+
+            {/* Safe Address Display */}
+            {safeAddress && (
+              <div className="mt-4 p-4 border rounded bg-gray-100">
+                <p className="text-sm font-medium">Safe Deployed At:</p>
+                <Address address={safeAddress} />
+              </div>
+            )}
           </div>
         </div>
-        <div className="mb-6">
-          <label className="block mb-2 text-sm font-medium">Signer 1</label>
-          <Address address={connectedAddress} />
-        </div>
-        <div className="mb-6">
-          <label className="block mb-2 text-sm font-medium">Threshold</label>
-          <select
-            className="block w-full p-2 border rounded"
-            value={threshold}
-            onChange={e => setThreshold(Number(e.target.value))}
-          >
-            <option value="1">1 (Single signer)</option>
-          </select>
-        </div>
-        <button
-          type="button"
-          className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5"
-          onClick={createWallet}
-          disabled={isDeploying}
-        >
-          {isDeploying ? "Deploying..." : "Create Haus"}
-        </button>
-        {safeAddress && (
-          <div className="mt-4 p-4 border rounded bg-gray-100">
-            <p className="text-sm font-medium">Safe Deployed At:</p>
-            <Address address={safeAddress} />
-          </div>
-        )}
-      </div>
-    </div>
+      )}
+    </>
   );
 };
