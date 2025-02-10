@@ -8,6 +8,7 @@ import { privateKeyToAccount } from "viem/accounts";
 import { waitForTransactionReceipt } from "viem/actions";
 import { baseSepolia } from "viem/chains";
 import { useAccount, useWalletClient } from "wagmi";
+import { ChevronRightIcon } from "@heroicons/react/24/solid";
 import { Address } from "~~/components/scaffold-eth";
 import { createHaus } from "~~/utils/crud/crud-haus";
 import { getPublicURL, uploadProfileAvatar } from "~~/utils/crud/crud-profile-pic";
@@ -43,7 +44,7 @@ export const CreateHaus = () => {
   const [description, setDescription] = useState("");
   const [profilePic, setProfilePic] = useState<File | null>(null);
   const [profilePicPreview, setProfilePicPreview] = useState<string | null>(null);
-  const [success, setSuccess] = useState<boolean>(false);
+  const [step2, setStep2] = useState<boolean>(false);
 
   const handleProfilePicChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
@@ -179,30 +180,36 @@ export const CreateHaus = () => {
     // Create the Haus entry
     const res = await createHaus(multisig_id, title, description, profile_pic_url, connectedAddress);
     if (res) {
-      setSuccess(true);
+      setStep2(true);
     }
     console.log("Haus created successfully:", res);
   };
   return (
     <>
-      {success ? (
+      {step2 ? (
         <FundHaus />
       ) : (
-        <div className="flex items-center flex-col flex-grow py-10">
-          <div className="px-5 max-w-md w-full">
-            <h1 className="text-center text-4xl font-bold mb-6">Create a HAUS</h1>
+        <div className="flex items-center flex-col flex-grow w-full">
+          {/* Progress Bar */}
+
+          <div className="p-5 w-full">
+            <div className="w-full bg-gray-200 rounded-full h-2.5 dark:bg-gray-700">
+              <div className="bg-blue-600 h-2.5 rounded-full" style={{ width: "50%" }}></div>
+            </div>
+
+            <h1 className="text-xl font-bold my-2">Create a HAUS</h1>
 
             {/* Profile Picture Upload */}
             <label className="flex flex-col items-center cursor-pointer">
-              <div className="w-24 h-24 rounded-full border-2 border-gray-300 flex items-center justify-center overflow-hidden">
+              <div className="w-24 h-24 rounded-full border-2 border-base-300 bg-base-200 flex items-center justify-center overflow-hidden">
                 {profilePicPreview ? (
                   <img src={profilePicPreview} alt="Profile" className="w-full h-full object-cover" />
                 ) : (
-                  <span className="text-gray-500">+</span>
+                  <span className="text-base-300">+</span>
                 )}
               </div>
               <input type="file" accept="image/*" className="hidden" onChange={handleProfilePicChange} />
-              <p className="mt-2 text-sm text-gray-600">Click to upload profile picture</p>
+              <p className="mt-2 text-sm">Upload profile picture</p>
             </label>
 
             {/* Title Input */}
@@ -210,7 +217,7 @@ export const CreateHaus = () => {
               <label className="block text-sm font-medium">Title</label>
               <input
                 type="text"
-                className="w-full p-2 border rounded"
+                className="w-full p-2 border border-base-300 bg-base-200 rounded"
                 placeholder="Enter HAUS title"
                 value={title}
                 onChange={e => setTitle(e.target.value)}
@@ -221,8 +228,8 @@ export const CreateHaus = () => {
             <div className="mt-4">
               <label className="block text-sm font-medium">Description</label>
               <textarea
-                className="w-full p-2 border rounded"
-                placeholder="Enter description"
+                className="w-full p-2 border border-base-300 bg-base-200 rounded"
+                placeholder="Enter HAUS description"
                 value={description}
                 onChange={e => setDescription(e.target.value)}
               />
@@ -237,7 +244,7 @@ export const CreateHaus = () => {
             {/* Threshold (Fixed at 1) */}
             <div className="mt-4">
               <label className="block text-sm font-medium">Threshold</label>
-              <select className="w-full p-2 border rounded bg-gray-100" value="1" disabled>
+              <select className="w-full p-2 border border-base-300 bg-base-200 rounded" value="1" disabled>
                 <option value="1">1 (Single signer)</option>
               </select>
             </div>
@@ -245,18 +252,21 @@ export const CreateHaus = () => {
             {/* Create Haus Button */}
             <button
               type="button"
-              className="mt-6 text-white bg-blue-700 hover:bg-blue-800 font-medium rounded-lg text-sm w-full px-5 py-2.5"
+              className="flex flex-row items-center justify-between mt-6 text-white bg-blue-700 hover:bg-blue-800 font-medium rounded-lg text-sm w-full px-5 py-2.5"
               onClick={handleCreateHaus}
               disabled={isDeploying}
             >
-              {isDeploying ? "Deploying..." : "Create Haus"}
+              <span></span>
+              <span>{isDeploying ? "Deploying..." : "Next"}</span> <ChevronRightIcon width={15} />
             </button>
 
             {/* Safe Address Display */}
             {safeAddress && (
-              <div className="mt-4 p-4 border rounded bg-gray-100">
-                <p className="text-sm font-medium">Safe Deployed At:</p>
-                <Address address={safeAddress} />
+              <div className="toast">
+                <div className="alert alert-info">
+                  <p className="text-sm font-medium">Safe Deployed At:</p>
+                  <Address address={safeAddress} />
+                </div>
               </div>
             )}
           </div>

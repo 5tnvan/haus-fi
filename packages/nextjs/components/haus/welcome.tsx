@@ -14,19 +14,21 @@ export const Welcome = () => {
   console.log("address", connectedAddress);
 
   return (
-    <div className="flex items-center flex-col flex-grow pt-10">
-      <div className="px-5">
-        <h1 className="text-center">
-          <span className="block text-4xl font-bold">Welcome</span>
+    <div className="flex items-center flex-col flex-grow">
+      <div className="w-full h-full object-cover">
+        <img src="/favicon.png" className="w-full" />
+      </div>
+
+      <div className="p-5">
+        <h1 className="">
+          <span className="block text-4xl font-bold">haus.fi</span>
         </h1>
-        <p>Connect your wallet to get started.</p>
-        <div className="w-full flex items-center flex-col flex-grow">
+        <p>Build your haus in just a few minutes</p>
+        <p>A haus needs a solid foundation. Create a wallet for your idea and let’s fund, match, grow it!</p>
+        <div className="btn rounded-lg flex items-center flex-col flex-grow">
           <RainbowKitCustomConnectButton />
           {isLocalNetwork && <FaucetButton />}
         </div>
-      </div>
-      <div className="flex-grow bg-base-300 w-full mt-16 px-8 py-12">
-        <div className="flex justify-center items-center gap-12 flex-col sm:flex-row"></div>
       </div>
     </div>
   );

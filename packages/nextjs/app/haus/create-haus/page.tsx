@@ -10,7 +10,7 @@ const Home: NextPage = () => {
 
   return (
     <>
-      <div className="flex items-center flex-col flex-grow pt-10">
+      <div className="flex items-center flex-col flex-grow">
         <div className="px-5">
           <h1 className="text-center">
             <span className="block text-4xl font-bold">Create a HAUS</span>
