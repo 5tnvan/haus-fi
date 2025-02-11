@@ -15,6 +15,7 @@
     "chain": "yarn hardhat:chain",
     "compile": "yarn hardhat:compile",
     "deploy": "yarn hardhat:deploy",
+    "dev": "yarn workspace @se-2/nextjs dev",
     "fork": "yarn hardhat:fork",
     "format": "yarn next:format && yarn hardhat:format",
     "generate": "yarn account:generate",
@@ -38,7 +39,7 @@
     "next:check-types": "yarn workspace @se-2/nextjs check-types",
     "next:format": "yarn workspace @se-2/nextjs format",
     "next:lint": "yarn workspace @se-2/nextjs lint",
-    "next:serve": "yarn workspace @se-2/nextjs serve",
+    "next:serve": "yarn workspace @se-2/nextjs dev",
     "postinstall": "husky",
     "precommit": "lint-staged",
     "start": "yarn workspace @se-2/nextjs dev",
@@ -60,6 +61,8 @@
     "@safe-global/protocol-kit": "^5.2.1",
     "@supabase/ssr": "^0.5.2",
     "@supabase/supabase-js": "^2.48.1",
-    "ethers": "^5.7.2"
+    "ethers": "^5.7.2",
+    "react-qr-code": "^2.0.15",
+    "react-responsive-carousel": "^3.2.23"
   }
 }

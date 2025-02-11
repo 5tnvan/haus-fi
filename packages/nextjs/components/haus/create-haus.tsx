@@ -1,277 +1,141 @@
+"use client";
+
 import React, { useState } from "react";
-import { FundHaus } from "./fund-haus";
-import Safe, { SafeAccountConfig, getSafeAddressFromDeploymentTx } from "@safe-global/protocol-kit";
-import { SafeVersion } from "@safe-global/types-kit";
-import semverSatisfies from "semver/functions/satisfies";
-import { createWalletClient, http } from "viem";
-import { privateKeyToAccount } from "viem/accounts";
-import { waitForTransactionReceipt } from "viem/actions";
-import { baseSepolia } from "viem/chains";
-import { useAccount, useWalletClient } from "wagmi";
-import { ChevronRightIcon } from "@heroicons/react/24/solid";
-import { Address } from "~~/components/scaffold-eth";
-import { createHaus } from "~~/utils/crud/crud-haus";
-import { getPublicURL, uploadProfileAvatar } from "~~/utils/crud/crud-profile-pic";
-
-interface Config {
-  RPC_URL: string;
-  DEPLOYER_ADDRESS_PRIVATE_KEY: string;
-  DEPLOY_SAFE: {
-    OWNERS: string[];
-    THRESHOLD: number;
-    SALT_NONCE: string;
-    SAFE_VERSION: string;
-  };
-}
-
-const config: Config = {
-  RPC_URL: baseSepolia.rpcUrls.default.http[0],
-  DEPLOYER_ADDRESS_PRIVATE_KEY: process.env.NEXT_PUBLIC_DEPLOYER_PRIVATE_KEY || "",
-  DEPLOY_SAFE: {
-    OWNERS: ["0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266"], //dummy wallet
-    THRESHOLD: 1,
-    SALT_NONCE: "150000",
-    SAFE_VERSION: "1.3.0",
-  },
-};
+import { useRouter } from "next/navigation";
+import { useAccount } from "wagmi";
 
 export const CreateHaus = () => {
   const { address: connectedAddress } = useAccount();
-  const { data: walletClient } = useWalletClient();
-  const [safeAddress, setSafeAddress] = useState<string | null>(null);
+  const [walletName, setWalletName] = useState("");
   const [isDeploying, setIsDeploying] = useState(false);
-  const [title, setTitle] = useState("");
-  const [description, setDescription] = useState("");
-  const [profilePic, setProfilePic] = useState<File | null>(null);
-  const [profilePicPreview, setProfilePicPreview] = useState<string | null>(null);
-  const [step2, setStep2] = useState<boolean>(false);
-
-  const handleProfilePicChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
-    if (file) {
-      setProfilePic(file);
-      setProfilePicPreview(URL.createObjectURL(file));
-    }
-  };
-
-  const handleCreateWallet = async (event?: React.MouseEvent<HTMLButtonElement>) => {
-    if (event) event.preventDefault();
-    if (!walletClient || !connectedAddress) {
-      alert("Please connect your wallet.");
-      return;
-    }
-
-    setIsDeploying(true);
-
-    console.log("Safe Account config: ", config.DEPLOY_SAFE);
-    // 1. set safe config
-    const safeAccountConfig: SafeAccountConfig = {
-      owners: [connectedAddress], // connected wallet will be the signer
-      threshold: config.DEPLOY_SAFE.THRESHOLD,
-    };
-
-    const safeVersion = config.DEPLOY_SAFE.SAFE_VERSION as SafeVersion;
-    const saltNonce = config.DEPLOY_SAFE.SALT_NONCE;
-
-    // protocol-kit instance creation
-    const protocolKit = await Safe.init({
-      provider: config.RPC_URL,
-      signer: config.DEPLOYER_ADDRESS_PRIVATE_KEY,
-      predictedSafe: {
-        safeAccountConfig,
-        safeDeploymentConfig: {
-          saltNonce,
-          safeVersion,
-        },
-      },
-    });
-
-    console.log("safeAccountConfig", safeAccountConfig);
-    console.log("protocolKit", protocolKit);
-
-    // The Account Abstraction feature is only available for Safes version 1.3.0 and above.
-    if (semverSatisfies(safeVersion, ">=1.3.0")) {
-      // check if its deployed
-      console.log("Safe Account deployed: ", await protocolKit.isSafeDeployed());
-
-      // Predict deployed address
-      const predictedSafeAddress = await protocolKit.getAddress();
-      console.log("Predicted Safe address:", predictedSafeAddress);
-    }
-
-    console.log("Deploying Safe Account...");
-
-    // Deploy the Safe account
-    const deploymentTransaction = await protocolKit.createSafeDeploymentTransaction();
-
-    console.log("deploymentTransaction: ", deploymentTransaction);
-
-    const account = privateKeyToAccount(`0x${config.DEPLOYER_ADDRESS_PRIVATE_KEY}`);
-
-    const client = createWalletClient({
-      account,
-      chain: baseSepolia,
-      transport: http(config.RPC_URL),
-    });
-
-    const txHash = await client.sendTransaction({
-      to: deploymentTransaction.to,
-      value: BigInt(deploymentTransaction.value),
-      data: deploymentTransaction.data as `0x${string}`,
-    });
-
-    console.log("Transaction hash:", txHash);
-
-    const txReceipt = await waitForTransactionReceipt(client, { hash: txHash });
-
-    const safeAddress = getSafeAddressFromDeploymentTx(txReceipt, safeVersion);
-
-    console.log("safeAddress:", safeAddress);
-    setSafeAddress(safeAddress);
-
-    protocolKit.connect({ safeAddress });
-
-    console.log("is Safe deployed:", await protocolKit.isSafeDeployed());
-    console.log("Safe Address:", await protocolKit.getAddress());
-    console.log("Safe Owners:", await protocolKit.getOwners());
-    console.log("Safe Threshold:", await protocolKit.getThreshold());
-
-    setIsDeploying(false);
-    return safeAddress;
-  };
-
-  const handleFileSave = async () => {
-    if (profilePic) {
-      //set up file
-      const fileData = new FormData();
-      fileData.append("file", profilePic);
-
-      // upload new avatar
-      const data1 = await uploadProfileAvatar(fileData, "dummy_multisig_id");
-
-      // update profile table
-      const data2 = await getPublicURL(data1?.path);
-      return data2.publicUrl;
-    }
-  };
+  const router = useRouter();
 
   const handleCreateHaus = async () => {
-    // Ensure required fields are provided
-    if (!title || !description) {
-      throw new Error("Title and description are required.");
+    if (!walletName || !connectedAddress) {
+      return;
     }
-
-    if (!connectedAddress) {
-      throw new Error("Wallet connection is required.");
+    setIsDeploying(true);
+    try {
+      // Implementation details...
+      // After successful creation:
+      router.push("/haus/fund");
+    } catch (error) {
+      console.error("Error creating HAUS:", error);
+    } finally {
+      setIsDeploying(false);
     }
-
-    // Deploy wallet and get multisig_id
-    const multisig_id = await handleCreateWallet();
-    if (!multisig_id) {
-      throw new Error("Failed to create multisig wallet.");
-    }
-
-    // Save the profile picture and ensure it's uploaded
-    const profile_pic_url = await handleFileSave();
-    if (!profile_pic_url) {
-      throw new Error("Profile picture is required.");
-    }
-
-    // Create the Haus entry
-    const res = await createHaus(multisig_id, title, description, profile_pic_url, connectedAddress);
-    if (res) {
-      setStep2(true);
-    }
-    console.log("Haus created successfully:", res);
   };
+
   return (
-    <>
-      {step2 ? (
-        <FundHaus />
-      ) : (
-        <div className="flex items-center flex-col flex-grow w-full">
-          {/* Progress Bar */}
+    <div className="flex flex-col min-h-screen max-w-[333px] mx-auto p-4">
+      {/* Status Bar */}
+      <div className="flex justify-between items-center mb-4">
+        <span className="text-lg text-black">9:41</span>
+        <div className="flex items-center gap-2">
+          <span className="text-black">user.eth</span>
+          <span className="text-green-600">base:0x1318...543</span>
+        </div>
+      </div>
 
-          <div className="p-5 w-full">
-            <div className="w-full bg-gray-200 rounded-full h-2.5 dark:bg-gray-700">
-              <div className="bg-blue-600 h-2.5 rounded-full" style={{ width: "50%" }}></div>
-            </div>
+      {/* Progress Bar */}
+      <div className="w-full bg-gray-200 rounded-full h-2 mb-8">
+        <div className="bg-green-600 h-2 rounded-full w-1/4"></div>
+      </div>
 
-            <h1 className="text-xl font-bold my-2">Create a HAUS</h1>
+      {/* Main Content */}
+      <h1 className="text-4xl font-bold mb-8 text-black">Create a HAUS</h1>
 
-            {/* Profile Picture Upload */}
-            <label className="flex flex-col items-center cursor-pointer">
-              <div className="w-24 h-24 rounded-full border-2 border-base-300 bg-base-200 flex items-center justify-center overflow-hidden">
-                {profilePicPreview ? (
-                  <img src={profilePicPreview} alt="Profile" className="w-full h-full object-cover" />
-                ) : (
-                  <span className="text-base-300">+</span>
-                )}
+      <div className="space-y-8">
+        {/* Wallet Name Input */}
+        <div>
+          <label className="block text-black text-lg mb-2">Name your Group Wallet</label>
+          <input
+            type="text"
+            className="w-full p-4 border-2 border-green-600 rounded-2xl text-lg"
+            value={walletName}
+            onChange={e => setWalletName(e.target.value)}
+            placeholder="GreenHAUS<>GreenLand 🏡🌿"
+          />
+        </div>
+
+        {/* Members Section */}
+        <div className="space-y-4">
+          {/* AI Agent */}
+          <div className="bg-green-50 p-4 rounded-2xl relative">
+            <div className="absolute top-4 right-4">
+              <div className="w-6 h-6 bg-green-600 rounded-full flex items-center justify-center">
+                <span className="text-white">✓</span>
               </div>
-              <input type="file" accept="image/*" className="hidden" onChange={handleProfilePicChange} />
-              <p className="mt-2 text-sm">Upload profile picture</p>
-            </label>
-
-            {/* Title Input */}
-            <div className="mt-4">
-              <label className="block text-sm font-medium">Title</label>
-              <input
-                type="text"
-                className="w-full p-2 border border-base-300 bg-base-200 rounded"
-                placeholder="Enter HAUS title"
-                value={title}
-                onChange={e => setTitle(e.target.value)}
-              />
             </div>
-
-            {/* Description Input */}
-            <div className="mt-4">
-              <label className="block text-sm font-medium">Description</label>
-              <textarea
-                className="w-full p-2 border border-base-300 bg-base-200 rounded"
-                placeholder="Enter HAUS description"
-                value={description}
-                onChange={e => setDescription(e.target.value)}
-              />
-            </div>
-
-            {/* Signer (Connected Wallet) */}
-            <div className="mt-4">
-              <label className="block text-sm font-medium">Signer</label>
-              <Address address={connectedAddress} />
-            </div>
-
-            {/* Threshold (Fixed at 1) */}
-            <div className="mt-4">
-              <label className="block text-sm font-medium">Threshold</label>
-              <select className="w-full p-2 border border-base-300 bg-base-200 rounded" value="1" disabled>
-                <option value="1">1 (Single signer)</option>
-              </select>
-            </div>
-
-            {/* Create Haus Button */}
-            <button
-              type="button"
-              className="flex flex-row items-center justify-between mt-6 text-white bg-blue-700 hover:bg-blue-800 font-medium rounded-lg text-sm w-full px-5 py-2.5"
-              onClick={handleCreateHaus}
-              disabled={isDeploying}
-            >
-              <span></span>
-              <span>{isDeploying ? "Deploying..." : "Next"}</span> <ChevronRightIcon width={15} />
-            </button>
-
-            {/* Safe Address Display */}
-            {safeAddress && (
-              <div className="toast">
-                <div className="alert alert-info">
-                  <p className="text-sm font-medium">Safe Deployed At:</p>
-                  <Address address={safeAddress} />
-                </div>
+            <div className="flex justify-between items-center">
+              <div>
+                <div className="text-xl font-medium text-black">AI Agent</div>
+                <div className="text-sm text-green-600 mt-1">base:0x131832E2D191213BBb1570455257c29D2154720</div>
               </div>
-            )}
+              <div className="text-right">
+                <div className="text-lg text-black">cherub.eth</div>
+                <div className="text-sm text-gray-500">Proposer</div>
+              </div>
+            </div>
+          </div>
+
+          {/* Member 1 */}
+          <div className="bg-green-50 p-4 rounded-lg">
+            <div className="flex justify-between items-center">
+              <div>
+                <div className="text-lg font-medium text-black">Connected Wallet</div>
+                <div className="text-sm text-green-600">base:0x131832E2D191213BBb1570455257c29D2154722</div>
+              </div>
+              <div className="text-right">
+                <div className="text-black">user.eth</div>
+                <div className="text-sm text-gray-500">Owner</div>
+              </div>
+            </div>
+          </div>
+
+          {/* Threshold */}
+          <div className="bg-green-50 p-4 rounded-lg">
+            <div className="flex justify-between items-center">
+              <div>
+                <div className="text-lg font-medium text-black">Multisig Settings</div>
+                <div className="text-sm text-black">Any transaction requires the confirmation of</div>
+              </div>
+              <div className="text-right">
+                <div className="text-black">2 owners</div>
+                <div className="text-sm text-gray-500">Threshold</div>
+              </div>
+            </div>
           </div>
         </div>
-      )}
-    </>
+
+        {/* You&apos;ll Get Section */}
+        <div className="bg-gray-50 p-4 rounded-lg">
+          <h2 className="text-xl font-bold mb-4 text-black">You&apos;ll get</h2>
+          <ul className="space-y-2">
+            <li className="flex items-center gap-2">
+              <span className="text-green-600">★</span>
+              <span className="text-black">Group Wallet / Multisig Account</span>
+            </li>
+            <li className="flex items-center gap-2">
+              <span className="text-green-600">★</span>
+              <span className="text-black">1 Signer, 1 AI Proposer</span>
+            </li>
+            <li className="flex items-center gap-2">
+              <span className="text-green-600">★</span>
+              <span className="text-black">Be part of HAUS Swipe-to-Match</span>
+            </li>
+          </ul>
+        </div>
+
+        {/* Create Button */}
+        <button
+          onClick={handleCreateHaus}
+          disabled={isDeploying}
+          className="w-full bg-green-600 text-white py-4 rounded-2xl text-lg font-medium"
+        >
+          {isDeploying ? "Creating..." : "Create HAUS"}
+        </button>
+      </div>
+    </div>
   );
 };
