@@ -237,7 +237,7 @@ export const CreateHaus = () => {
 
             {/* Signer (Connected Wallet) */}
             <div className="mt-4">
-              <label className="block text-sm font-medium">Signer</label>
+              <label className="block text-sm font-medium">Owner</label>
               <Address address={connectedAddress} />
             </div>
 
@@ -245,7 +245,7 @@ export const CreateHaus = () => {
             <div className="mt-4">
               <label className="block text-sm font-medium">Threshold</label>
               <select className="w-full p-2 border border-base-300 bg-base-200 rounded" value="1" disabled>
-                <option value="1">1 (Single signer)</option>
+                <option value="1">1 (Single)</option>
               </select>
             </div>
 

@@ -33,6 +33,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@adraffy/ens-normalize@npm:1.9.2":
+  version: 1.9.2
+  resolution: "@adraffy/ens-normalize@npm:1.9.2"
+  checksum: a9fdeb9e080774c19e4b7f9f60aa5b37cf23fe0e8fe80284bf8221f7396e9f78642bfd39a09a94a4dc3fb8e70f2ac81545204bdcaf222d93f4c4c2ae1f0dca0b
+  languageName: node
+  linkType: hard
+
 "@alloc/quick-lru@npm:^5.2.0":
   version: 5.2.0
   resolution: "@alloc/quick-lru@npm:5.2.0"
@@ -860,6 +867,18 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@gelatonetwork/relay-sdk@npm:^5.5.0":
+  version: 5.6.0
+  resolution: "@gelatonetwork/relay-sdk@npm:5.6.0"
+  dependencies:
+    axios: 0.29.0
+    ethers: 6.7.0
+    isomorphic-ws: ^5.0.0
+    ws: ^8.18.0
+  checksum: c5f39a010c3f3158df65d153c28444ca1422668dacfaeb901f3121ce2be6b23a95e6348906542b835c2c47833ea20dfb8cd80b122a031a6f3a0db19e82e2d6d5
+  languageName: node
+  linkType: hard
+
 "@heroicons/react@npm:^2.1.5":
   version: 2.1.5
   resolution: "@heroicons/react@npm:2.1.5"
@@ -1561,6 +1580,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@noble/hashes@npm:1.1.2":
+  version: 1.1.2
+  resolution: "@noble/hashes@npm:1.1.2"
+  checksum: 3c2a8cb7c2e053811032f242155d870c5eb98844d924d69702244d48804cb03b42d4a666c49c2b71164420d8229cb9a6f242b972d50d5bb2f1d673b98b041de2
+  languageName: node
+  linkType: hard
+
 "@noble/hashes@npm:1.2.0, @noble/hashes@npm:~1.2.0":
   version: 1.2.0
   resolution: "@noble/hashes@npm:1.2.0"
@@ -2165,6 +2191,18 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@safe-global/api-kit@npm:^2.5.9":
+  version: 2.5.9
+  resolution: "@safe-global/api-kit@npm:2.5.9"
+  dependencies:
+    "@safe-global/protocol-kit": ^5.2.2
+    "@safe-global/types-kit": ^1.0.2
+    node-fetch: ^2.7.0
+    viem: ^2.21.8
+  checksum: 0afcead926181ad5d6470b5145d7a36b6bdc4251dc6bfa1f4ecc4e0f1a9049fc255f8f61ee125556f3be108bf9ff4d3331b9904b786f4812408ae87d7be6d74e
+  languageName: node
+  linkType: hard
+
 "@safe-global/protocol-kit@npm:^5.2.1":
   version: 5.2.1
   resolution: "@safe-global/protocol-kit@npm:5.2.1"
@@ -2183,6 +2221,40 @@ __metadata:
     "@peculiar/asn1-schema":
       optional: true
   checksum: 49b2ee2dbf89b19cf89904054ac21ab6af415f57a8941af0b455ebc046374ea0e7043107181bef22a425b88fc64464ecbf00277254fc39ade4ed0294731de0ea
+  languageName: node
+  linkType: hard
+
+"@safe-global/protocol-kit@npm:^5.2.2":
+  version: 5.2.2
+  resolution: "@safe-global/protocol-kit@npm:5.2.2"
+  dependencies:
+    "@noble/curves": ^1.6.0
+    "@peculiar/asn1-schema": ^2.3.13
+    "@safe-global/safe-deployments": ^1.37.28
+    "@safe-global/safe-modules-deployments": ^2.2.5
+    "@safe-global/types-kit": ^1.0.2
+    abitype: ^1.0.2
+    semver: ^7.6.3
+    viem: ^2.21.8
+  dependenciesMeta:
+    "@noble/curves":
+      optional: true
+    "@peculiar/asn1-schema":
+      optional: true
+  checksum: 3cd4e3583f0b874ee33c664df5b1762ceb96adff4b1cf97a2679336604ad458bc645b817ca4eab94b76e188653422a20336ef5275c5bdd99be870a0db7272ef9
+  languageName: node
+  linkType: hard
+
+"@safe-global/relay-kit@npm:^3.4.3":
+  version: 3.4.3
+  resolution: "@safe-global/relay-kit@npm:3.4.3"
+  dependencies:
+    "@gelatonetwork/relay-sdk": ^5.5.0
+    "@safe-global/protocol-kit": ^5.2.2
+    "@safe-global/safe-modules-deployments": ^2.2.5
+    "@safe-global/types-kit": ^1.0.2
+    viem: ^2.21.8
+  checksum: 71b9837019df27a854a99ed8755b6bc7469c39f0f6d722ddb966e2bbce912353b9b4e7b464a7f6036e7ede0d3c30d25744ecb9fd7f4b96831a80808ae0f55274
   languageName: node
   linkType: hard
 
@@ -2215,6 +2287,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@safe-global/safe-deployments@npm:^1.37.28":
+  version: 1.37.28
+  resolution: "@safe-global/safe-deployments@npm:1.37.28"
+  dependencies:
+    semver: ^7.6.2
+  checksum: 5bf5e179b4cc8aafec877dd1b98b7b39d756878ba997997c08f4b40e70075c5ed87b21e6bbb4f36188d4991b1a2c66de04360db602802812ab94bd51c9972bdc
+  languageName: node
+  linkType: hard
+
 "@safe-global/safe-gateway-typescript-sdk@npm:^3.5.3":
   version: 3.12.0
   resolution: "@safe-global/safe-gateway-typescript-sdk@npm:3.12.0"
@@ -2226,6 +2307,19 @@ __metadata:
   version: 2.2.5
   resolution: "@safe-global/safe-modules-deployments@npm:2.2.5"
   checksum: 6d6b3c9a5c7635f874dcbc5fea424714465a46630fed1e6b74bf3608219f63da88a433bad3b72ddbbffc09c1f8963fd713473d1bee199bbcbb7f1b691f5ecfb0
+  languageName: node
+  linkType: hard
+
+"@safe-global/sdk-starter-kit@npm:^1.1.5":
+  version: 1.1.5
+  resolution: "@safe-global/sdk-starter-kit@npm:1.1.5"
+  dependencies:
+    "@safe-global/api-kit": ^2.5.9
+    "@safe-global/protocol-kit": ^5.2.2
+    "@safe-global/relay-kit": ^3.4.3
+    "@safe-global/types-kit": ^1.0.2
+    viem: ^2.21.8
+  checksum: ea9625cb0fad84e5323c7b5e5f63282b65952d89032dc547d4149876838e9b7fce1950fffa9838a0249f0419ab92d213b2390f3e1e874c5fdd6a355ea0eb5969
   languageName: node
   linkType: hard
 
@@ -4740,6 +4834,17 @@ __metadata:
   languageName: node
   linkType: hard
 
+"axios@npm:0.29.0":
+  version: 0.29.0
+  resolution: "axios@npm:0.29.0"
+  dependencies:
+    follow-redirects: ^1.15.4
+    form-data: ^4.0.0
+    proxy-from-env: ^1.1.0
+  checksum: b365fa0471ff62472521932c68f152e98650804c016fc6a9fe337a6cd67201141baf14d29161527cce5189b9eba8f14cb5781e02c56e69f56784e9a23385d7e7
+  languageName: node
+  linkType: hard
+
 "axios@npm:^0.21.1":
   version: 0.21.4
   resolution: "axios@npm:0.21.4"
@@ -7149,6 +7254,21 @@ __metadata:
   languageName: node
   linkType: hard
 
+"ethers@npm:6.7.0":
+  version: 6.7.0
+  resolution: "ethers@npm:6.7.0"
+  dependencies:
+    "@adraffy/ens-normalize": 1.9.2
+    "@noble/hashes": 1.1.2
+    "@noble/secp256k1": 1.7.1
+    "@types/node": 18.15.13
+    aes-js: 4.0.0-beta.5
+    tslib: 2.4.0
+    ws: 8.5.0
+  checksum: 6d2ea085010da1c34750ce4a00a94d2abbeb3ababb23aa754acc7772682f145e8c1b3862d3b5374e1c182aee569c80ea48191107d469a4de3b0dd6af3d9ce6db
+  languageName: node
+  linkType: hard
+
 "ethers@npm:^5.7.0, ethers@npm:^5.7.2, ethers@npm:~5.7.0":
   version: 5.7.2
   resolution: "ethers@npm:5.7.2"
@@ -7555,7 +7675,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"follow-redirects@npm:^1.15.6":
+"follow-redirects@npm:^1.15.4, follow-redirects@npm:^1.15.6":
   version: 1.15.9
   resolution: "follow-redirects@npm:1.15.9"
   peerDependenciesMeta:
@@ -9064,6 +9184,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"isomorphic-ws@npm:^5.0.0":
+  version: 5.0.0
+  resolution: "isomorphic-ws@npm:5.0.0"
+  peerDependencies:
+    ws: "*"
+  checksum: e20eb2aee09ba96247465fda40c6d22c1153394c0144fa34fe6609f341af4c8c564f60ea3ba762335a7a9c306809349f9b863c8beedf2beea09b299834ad5398
+  languageName: node
+  linkType: hard
+
 "isows@npm:1.0.3":
   version: 1.0.3
   resolution: "isows@npm:1.0.3"
@@ -10455,7 +10584,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"node-fetch@npm:^2.6.12, node-fetch@npm:^2.6.7":
+"node-fetch@npm:^2.6.12, node-fetch@npm:^2.6.7, node-fetch@npm:^2.7.0":
   version: 2.7.0
   resolution: "node-fetch@npm:2.7.0"
   dependencies:
@@ -12270,6 +12399,7 @@ __metadata:
   resolution: "se-2@workspace:."
   dependencies:
     "@safe-global/protocol-kit": ^5.2.1
+    "@safe-global/sdk-starter-kit": ^1.1.5
     "@supabase/ssr": ^0.5.2
     "@supabase/supabase-js": ^2.48.1
     ethers: ^5.7.2
@@ -14496,6 +14626,21 @@ __metadata:
     utf-8-validate:
       optional: true
   checksum: 91d4d35bc99ff6df483bdf029b9ea4bfd7af1f16fc91231a96777a63d263e1eabf486e13a2353970efc534f9faa43bdbf9ee76525af22f4752cbc5ebda333975
+  languageName: node
+  linkType: hard
+
+"ws@npm:8.5.0":
+  version: 8.5.0
+  resolution: "ws@npm:8.5.0"
+  peerDependencies:
+    bufferutil: ^4.0.1
+    utf-8-validate: ^5.0.2
+  peerDependenciesMeta:
+    bufferutil:
+      optional: true
+    utf-8-validate:
+      optional: true
+  checksum: 76f2f90e40344bf18fd544194e7067812fb1372b2a37865678d8f12afe4b478ff2ebc0c7c0aff82cd5e6b66fc43d889eec0f1865c2365d8f7a66d92da7744a77
   languageName: node
   linkType: hard
 
