@@ -17,7 +17,6 @@ const Home: NextPage = () => {
       if (connectedAddress) {
         try {
           const res = await readHausFromSigner(connectedAddress); // Await the promise
-          console.log("res", res); // Log the result (e.g., haus data)
           if (res && res.length > 0) setHausData(res);
         } catch (err) {
           console.error("Error fetching Haus data:", err);

@@ -47,16 +47,16 @@ export const FundHaus = () => {
             </div>
 
             {/* Display total asset value */}
-            <p className="flex flex-row gap-2 items-center text-lg font-base">
+            <div className="flex flex-row gap-2 items-center text-lg font-base">
               <div className="badge badge-lg badge-primary">
                 {totalAssetValue !== null ? `$${totalAssetValue.toFixed(2)}` : "Loading..."}
               </div>
 
               <div className="badge badge-secondary">Total asset value</div>
-            </p>
+            </div>
 
             <p className="text-sm mb-2">{hausData?.haus?.description}</p>
-            <p className="flex flex-row items-center justify-between text-sm p-5 bg-base-200 rounded-xl">
+            <div className="flex flex-row items-center justify-between text-sm p-5 bg-base-300 rounded-xl">
               <div>
                 <span className="text-opacity-75 mb-2">Multisig</span>
                 <Address address={hausData?.haus.multisig_id} />
@@ -70,8 +70,8 @@ export const FundHaus = () => {
                 <img src="/safe.png" width={14} />
                 Safe
               </a>
-            </p>
-            <p className="text-sm p-5 bg-base-200 rounded-xl">
+            </div>
+            <div className="text-sm p-5 bg-base-200 rounded-xl mt-2">
               <span className="text-opacity-75">Multisig owners</span>
               <div className="flex flex-col gap-2">
                 {owners.map((owner, index) => (
@@ -80,7 +80,7 @@ export const FundHaus = () => {
                   </span>
                 ))}
               </div>
-            </p>
+            </div>
 
             {/* Display loading, error, or owners */}
             {loading && <p>Loading owners...</p>}

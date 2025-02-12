@@ -10,8 +10,6 @@ const LikedBy: NextPage = () => {
   const { address: connectedAddress } = useAccount();
   const { feed } = useLikedBy();
 
-  console.log("feed", feed);
-
   return (
     <div className="flex items-center flex-col flex-grow gap-4">
       {!connectedAddress && <Welcome />}
