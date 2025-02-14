@@ -20,7 +20,8 @@ const Matches: NextPage = () => {
   const hausData = haus && haus.length > 0 ? haus[0] : null;
   const multisigId = hausData?.haus.multisig_id;
   const { owners: hausOwners } = useMultisigOwners(multisigId, walletClient);
-  const [success, setSuccess] = useState(false);
+  const [successMsg, setSuccessMsg] = useState<string | null>(null);
+  const [successLink, setSuccessLink] = useState<string | null>(null);
 
   const handleAddOwners = async (multisig_id: string) => {
     console.log("multisig_id", multisig_id);
@@ -41,7 +42,8 @@ const Matches: NextPage = () => {
 
       const safeClient = await createSafeClient({
         provider,
-        signer: walletClient.account.address,
+        //signer: walletClient.account.address,
+        signer: process.env.NEXT_PUBLIC_DEPLOYER_PRIVATE_KEY,
         safeAddress: hausData?.haus.multisig_id,
       });
 
@@ -52,11 +54,14 @@ const Matches: NextPage = () => {
 
       const transactionResult = await safeClient.send({ transactions: [transaction] });
 
+      const chainPrefix = "basesep";
+
+      const link = `https://app.safe.global/transactions/tx?id=multisig_${transactionResult.safeAddress}_${transactionResult.safeTxHash}&safe=${chainPrefix}:${transactionResult.safeAddress}`;
+
       if (transactionResult) {
-        //show toast
-        setSuccess(true);
-        //refresh page
-        window.location.reload();
+        console.log("link", link);
+        setSuccessMsg(transactionResult.status);
+        setSuccessLink(link);
       }
 
       console.log("Add Owner Transaction Result", transactionResult);
@@ -102,13 +107,32 @@ const Matches: NextPage = () => {
           ))}
         </div>
       )}
-      {success && (
-        <div className="toast z-20">
-          <div className="alert alert-success">
-            <span>New owner successfully added.</span>
+
+      <div className="toast z-20">
+        {successMsg && (
+          <div className="flex flex-row justify-between alert alert-warning">
+            <span>{successMsg}</span>
+            <span className="cursor-pointer" onClick={() => setSuccessMsg(null)}>
+              [x]
+            </span>
           </div>
-        </div>
-      )}
+        )}
+        {successLink && (
+          <div className="alert alert-info">
+            <span className="cursor-pointer" onClick={() => setSuccessLink(null)}>
+              Go to{" "}
+              <a href={successLink} className="btn btn-secondary btn-sm" target="_blank">
+                <img src="/safe.png" width={14} />
+                Safe
+              </a>{" "}
+              transaction
+            </span>
+            <span className="cursor-pointer" onClick={() => setSuccessLink(null)}>
+              [x]
+            </span>
+          </div>
+        )}
+      </div>
     </div>
   );
 };

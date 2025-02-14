@@ -19,7 +19,8 @@ export const AIAgent = () => {
   const [proposedSuccess, setProposedSuccess] = useState<string | null>(null);
   const [proposedSuccessLink, setProposedSuccessLink] = useState<string | null>(null);
   const [executeSuccess, setExecuteSuccess] = useState<string | null>(null);
-  const [error, setError] = useState<string | null>(null);
+  const [executeWarning, setExecuteWarning] = useState<string | null>(null);
+  const [securityError, setSecurityError] = useState<string | null>(null);
   const [amount, setAmount] = useState(25);
   const [isEditing, setIsEditing] = useState(false);
   const [isProp1Loading, setIsProp1Loading] = useState(false);
@@ -90,7 +91,7 @@ export const AIAgent = () => {
         setProposedSuccess("Proposal successfully created");
         setProposedSuccessLink(link);
       } else {
-        setError(`Security check failed: Amount exceeds $${maxAllowedAmount}`);
+        setSecurityError(`Security check failed: Amount exceeds $${maxAllowedAmount}`);
         setIsProp1Loading(false);
         return;
       }
@@ -104,9 +105,9 @@ export const AIAgent = () => {
         setExecuteSuccess("Transaction executed successfully.");
       } catch (error) {
         if (error instanceof Error) {
-          setError(error.message); // Extract error message if it's an Error object
+          setExecuteWarning(error.message); // Extract error message if it's an Error object
         } else {
-          setError(String(error)); // Convert unknown error to string
+          setExecuteWarning(String(error)); // Convert unknown error to string
         }
       }
       setIsProp1Loading(false);
@@ -259,17 +260,17 @@ export const AIAgent = () => {
             {loading && <p>Loading owners...</p>}
 
             <div className="toast toast-end z-20">
-              {error && (
-                <div className="alert alert-error">
-                  <span>{error}</span>
-                  <span className="cursor-pointer" onClick={() => setError(null)}>
+              {executeWarning && (
+                <div className="flex flex-row justify-between alert alert-warning">
+                  <span>{executeWarning}</span>
+                  <span className="cursor-pointer" onClick={() => setExecuteWarning(null)}>
                     [x]
                   </span>
                 </div>
               )}
 
               {executeSuccess && (
-                <div className="alert alert-success">
+                <div className="flex flex-row justify-between alert alert-success">
                   <span>{executeSuccess}</span>
                   <span className="cursor-pointer" onClick={() => setExecuteSuccess(null)}>
                     [x]
@@ -277,15 +278,24 @@ export const AIAgent = () => {
                 </div>
               )}
 
+              {securityError && (
+                <div className="flex flex-row justify-between alert alert-error">
+                  <span>{securityError}</span>
+                  <span className="cursor-pointer" onClick={() => setSecurityError(null)}>
+                    [x]
+                  </span>
+                </div>
+              )}
+
               {proposedSuccessLink && (
-                <div className="alert alert-info">
+                <div className="flex flex-row justify-between alert alert-info">
                   <span className="cursor-pointer" onClick={() => setProposedSuccessLink(null)}>
                     Go to{" "}
                     <a href={proposedSuccessLink} className="btn btn-secondary btn-sm" target="_blank">
                       <img src="/safe.png" width={14} />
                       Safe
                     </a>{" "}
-                    proposal
+                    transaction
                   </span>
                   <span className="cursor-pointer" onClick={() => setProposedSuccessLink(null)}>
                     [x]
@@ -294,7 +304,7 @@ export const AIAgent = () => {
               )}
 
               {proposedSuccess && (
-                <div className="alert alert-success">
+                <div className="flex flex-row justify-between alert alert-success">
                   <span>Proposal successfully created</span>
                   <span className="cursor-pointer" onClick={() => setProposedSuccess(null)}>
                     [x]
