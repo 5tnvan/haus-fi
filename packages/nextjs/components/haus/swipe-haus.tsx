@@ -62,15 +62,15 @@ export const SwipeHaus = ({ hausData }: { hausData: HausData }) => {
             </div>
 
             <div className="flex flex-row gap-2 items-center text-lg font-base">
-              <div className="badge badge-lg badge-primary">
+              <div className="badge badge-lg badge-base-100">
                 {totalAssetValue !== null ? `$${totalAssetValue.toFixed(2)}` : "Loading..."}
               </div>
 
-              <div className="badge badge-secondary">Total asset value</div>
+              <div className="badge badge-outline badge-info">Total asset value</div>
             </div>
 
             <div className="text-sm">{hausData.description}</div>
-            <div className="flex flex-row items-center justify-between text-sm p-5 bg-base-300 rounded-xl">
+            <div className="flex flex-row items-center justify-between text-sm p-5 bg-base-200 rounded-xl">
               <div>
                 <span className="text-opacity-75 mb-2">Multisig</span>
                 <Address address={hausData.multisig_id} />

@@ -63,7 +63,7 @@ export const Haus = ({
           </div>
 
           <div className="text-sm">{haus.description}</div>
-          <div className="flex flex-row items-center justify-between text-sm p-5 bg-base-300 rounded-xl">
+          <div className="flex flex-row items-center justify-between text-sm p-5 bg-base-200 rounded-xl">
             <div>
               <span className="text-opacity-75 mb-2">Multisig</span>
               <Address address={haus.multisig_id} />

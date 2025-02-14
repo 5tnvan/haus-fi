@@ -13,8 +13,8 @@ import {
   DocumentDuplicateIcon,
   QrCodeIcon,
 } from "@heroicons/react/24/outline";
-import { BlockieAvatar, isENS } from "~~/components/scaffold-eth";
-import { useOutsideClick } from "~~/hooks/scaffold-eth";
+import { Balance, BlockieAvatar, isENS } from "~~/components/scaffold-eth";
+import { useNetworkColor, useOutsideClick } from "~~/hooks/scaffold-eth";
 import { getTargetNetworks } from "~~/utils/scaffold-eth";
 
 const allowedNetworks = getTargetNetworks();
@@ -24,6 +24,8 @@ type AddressInfoDropdownProps = {
   blockExplorerAddressLink: string | undefined;
   displayName: string;
   ensAvatar?: string;
+  account: any;
+  chain: any;
 };
 
 export const AddressInfoDropdown = ({
@@ -31,7 +33,10 @@ export const AddressInfoDropdown = ({
   ensAvatar,
   displayName,
   blockExplorerAddressLink,
+  account,
+  chain,
 }: AddressInfoDropdownProps) => {
+  const networkColor = useNetworkColor();
   const { disconnect } = useDisconnect();
   const checkSumAddress = getAddress(address);
 
@@ -59,6 +64,12 @@ export const AddressInfoDropdown = ({
           tabIndex={0}
           className="dropdown-content menu z-[2] p-2 mt-2 shadow-center shadow-accent bg-base-200 rounded-box gap-1"
         >
+          <div className="flex flex-col items-center mr-1">
+            <Balance address={account.address as Address} className="min-h-0 h-auto" />
+            <span className="text-xs" style={{ color: networkColor }}>
+              {chain.name}
+            </span>
+          </div>
           <NetworkOptions hidden={!selectingNetwork} />
           <li className={selectingNetwork ? "hidden" : ""}>
             {addressCopied ? (

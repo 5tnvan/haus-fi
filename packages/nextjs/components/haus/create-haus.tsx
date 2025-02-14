@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { FundHaus } from "./fund-haus";
 import Safe, { SafeAccountConfig, getSafeAddressFromDeploymentTx } from "@safe-global/protocol-kit";
 import { SafeVersion } from "@safe-global/types-kit";
@@ -29,7 +29,7 @@ const config: Config = {
   DEPLOYER_ADDRESS_PRIVATE_KEY: process.env.NEXT_PUBLIC_DEPLOYER_PRIVATE_KEY || "",
   DEPLOY_SAFE: {
     OWNERS: ["0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266"], //dummy wallet
-    THRESHOLD: 1,
+    THRESHOLD: 2,
     SALT_NONCE: "150000",
     SAFE_VERSION: "1.3.0",
   },
@@ -45,6 +45,7 @@ export const CreateHaus = () => {
   const [profilePic, setProfilePic] = useState<File | null>(null);
   const [profilePicPreview, setProfilePicPreview] = useState<string | null>(null);
   const [step2, setStep2] = useState<boolean>(false);
+  const [signerAddress, setSignerAddress] = useState<string | null>(null);
 
   const handleProfilePicChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
@@ -63,10 +64,10 @@ export const CreateHaus = () => {
 
     setIsDeploying(true);
 
-    console.log("Safe Account config: ", config.DEPLOY_SAFE);
-    // 1. set safe config
+    const account = privateKeyToAccount(`0x${config.DEPLOYER_ADDRESS_PRIVATE_KEY}`);
+
     const safeAccountConfig: SafeAccountConfig = {
-      owners: [connectedAddress], // connected wallet will be the signer
+      owners: [account.address, connectedAddress], //deployer account as AI, and connected address
       threshold: config.DEPLOY_SAFE.THRESHOLD,
     };
 
@@ -89,9 +90,7 @@ export const CreateHaus = () => {
     console.log("safeAccountConfig", safeAccountConfig);
     console.log("protocolKit", protocolKit);
 
-    // The Account Abstraction feature is only available for Safes version 1.3.0 and above.
     if (semverSatisfies(safeVersion, ">=1.3.0")) {
-      // check if its deployed
       console.log("Safe Account deployed: ", await protocolKit.isSafeDeployed());
 
       // Predict deployed address
@@ -105,8 +104,6 @@ export const CreateHaus = () => {
     const deploymentTransaction = await protocolKit.createSafeDeploymentTransaction();
 
     console.log("deploymentTransaction: ", deploymentTransaction);
-
-    const account = privateKeyToAccount(`0x${config.DEPLOYER_ADDRESS_PRIVATE_KEY}`);
 
     const client = createWalletClient({
       account,
@@ -184,6 +181,13 @@ export const CreateHaus = () => {
     }
     console.log("Haus created successfully:", res);
   };
+
+  useEffect(() => {
+    if (config.DEPLOYER_ADDRESS_PRIVATE_KEY) {
+      const account = privateKeyToAccount(`0x${config.DEPLOYER_ADDRESS_PRIVATE_KEY}`);
+      setSignerAddress(account.address); // Set the address from the private key
+    }
+  }, []);
   return (
     <>
       {step2 ? (
@@ -236,16 +240,23 @@ export const CreateHaus = () => {
             </div>
 
             {/* Signer (Connected Wallet) */}
-            <div className="mt-4">
-              <label className="block text-sm font-medium">Owner</label>
-              <Address address={connectedAddress} />
+            <div className="text-sm p-5 bg-base-200 rounded-xl mt-4">
+              <span className="text-opacity-75">Multisig owners</span>
+              <div className="flex flex-col gap-2">
+                <div className="flex flex-row justify-between">
+                  <Address address={signerAddress ? signerAddress : ""} />
+                  <span className="badge badge-success badge-outline">AI agent</span>
+                </div>
+                <Address address={connectedAddress} />
+              </div>
             </div>
 
             {/* Threshold (Fixed at 1) */}
             <div className="mt-4">
               <label className="block text-sm font-medium">Threshold</label>
-              <select className="w-full p-2 border border-base-300 bg-base-200 rounded" value="1" disabled>
+              <select className="w-full p-2 border border-base-300 bg-base-200 rounded" value="2" disabled>
                 <option value="1">1 (Single)</option>
+                <option value="2">2</option>
               </select>
             </div>
 

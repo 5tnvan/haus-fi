@@ -10,24 +10,36 @@ import { SwipeHaus } from "~~/components/haus/swipe-haus";
 import { Welcome } from "~~/components/haus/welcome";
 import { useHaus } from "~~/hooks/haus/useHaus";
 import { useRandomHaus } from "~~/hooks/haus/useRandomHaus";
-import { createHausSwipe } from "~~/utils/crud/crud-haus-swipes";
+import { swipeHausAction } from "~~/utils/swipe-haus";
 
 const Swipe: NextPage = () => {
   const { address: connectedAddress } = useAccount();
   const { haus, totalAssetValue } = useHaus();
-  const { feed: hausFeed, fetchMore, refetch } = useRandomHaus(10);
+  const { feed: hausFeed, fetchMore } = useRandomHaus(10);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [swipeRightSuccess, setSwipeRightSuccess] = useState(false);
+  const [swipeRightLoading, setSwipeRightLoading] = useState(false);
+
+  console.log("hausFeed", hausFeed);
+  console.log("currentIndex", currentIndex);
 
   const handleNextHaus = async (yah: boolean, haus_id: string) => {
     if (yah) {
-      const error = await createHausSwipe(haus_id, haus[0].haus_id);
+      setSwipeRightLoading(true);
+      const error = await swipeHausAction(haus_id, haus[0].haus_id);
+      console.log("error", error);
       if (error) {
         alert("Uh-Oh, Swipe Right Failed");
+        setSwipeRightLoading(false);
       } else {
-        refetch();
+        console.log("success");
+        setCurrentIndex(hausFeed.length - 1);
         setSwipeRightSuccess(true);
-        setTimeout(() => setSwipeRightSuccess(false), 3000);
+        setSwipeRightLoading(false);
+        // Reset success state after 2 seconds
+        setTimeout(() => {
+          setSwipeRightSuccess(false);
+        }, 2000);
       }
     }
 
@@ -36,7 +48,7 @@ const Swipe: NextPage = () => {
         setCurrentIndex(prevIndex => prevIndex + 1);
       } else {
         fetchMore(); // Fetch more data
-        setCurrentIndex(0); // Reset index after fetching more
+        setCurrentIndex(prevIndex => prevIndex + 1);
       }
     }
   };
@@ -85,7 +97,12 @@ const Swipe: NextPage = () => {
                       <span>
                         <HeartIcon width={15} />
                       </span>
-                      <span>{`Yah!`}</span> <ChevronRightIcon width={15} />
+                      <span>{`Yah!`}</span>{" "}
+                      {swipeRightLoading ? (
+                        <span className="loading loading-spinner loading-xs"></span>
+                      ) : (
+                        <ChevronRightIcon width={15} />
+                      )}
                     </button>
                   </>
                 )}
@@ -95,6 +112,7 @@ const Swipe: NextPage = () => {
                 <div className="toast z-30">
                   <div className="alert alert-success">
                     <span className="text-sm font-medium">Yay, you loved it!</span>
+                    <span onClick={() => setSwipeRightSuccess(false)}>x</span>
                   </div>
                 </div>
               )}

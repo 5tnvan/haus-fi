@@ -29,7 +29,7 @@ const Liked: React.FC<LikedProps> = ({ liked }) => {
           </div>
         </div>
         <div>{liked.haus.description}</div>
-        <div className="flex flex-row items-center justify-between text-sm p-5 bg-base-300 rounded-xl">
+        <div className="flex flex-row items-center justify-between text-sm p-5 bg-base-100 rounded-xl">
           <div>
             <span className="text-opacity-75 mb-2">Multisig</span>
             <Address address={liked.haus.multisig_id} />

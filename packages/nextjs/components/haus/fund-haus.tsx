@@ -1,6 +1,7 @@
 import React from "react";
 import { useRouter } from "next/navigation";
 import { Address } from "../scaffold-eth/Address/Address";
+import MultisigOwners from "./multisig-owners";
 import { useAccount, useWalletClient } from "wagmi";
 import { useHaus } from "~~/hooks/haus/useHaus";
 import { useMultisigOwners } from "~~/hooks/haus/useOwners";
@@ -56,7 +57,7 @@ export const FundHaus = () => {
             </div>
 
             <p className="text-sm mb-2">{hausData?.haus?.description}</p>
-            <div className="flex flex-row items-center justify-between text-sm p-5 bg-base-300 rounded-xl">
+            <div className="flex flex-row items-center justify-between text-sm p-5 bg-base-200 rounded-xl">
               <div>
                 <span className="text-opacity-75 mb-2">Multisig</span>
                 <Address address={hausData?.haus.multisig_id} />
@@ -71,15 +72,8 @@ export const FundHaus = () => {
                 Safe
               </a>
             </div>
-            <div className="text-sm p-5 bg-base-200 rounded-xl mt-2">
-              <span className="text-opacity-75">Multisig owners</span>
-              <div className="flex flex-col gap-2">
-                {owners.map((owner, index) => (
-                  <span key={index} className="text-sm">
-                    <Address address={owner} />
-                  </span>
-                ))}
-              </div>
+            <div className="mt-2">
+              <MultisigOwners owners={owners} />
             </div>
 
             {/* Display loading, error, or owners */}

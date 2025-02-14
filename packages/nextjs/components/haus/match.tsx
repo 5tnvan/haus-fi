@@ -11,9 +11,7 @@ const Match = ({ match, haus, hausOwners, matchedOwners, onOwnerApproved }: any)
   const isOwnerAlreadyAdded = hausOwners.includes(selectedOwner);
 
   const handleApproveOwner = () => {
-    if (onOwnerApproved) {
-      onOwnerApproved(selectedOwner);
-    }
+    onOwnerApproved(selectedOwner);
   };
 
   return (

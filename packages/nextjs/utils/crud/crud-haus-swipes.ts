@@ -18,8 +18,6 @@ export const createHausSwipe = async (haus_id: string, swiped_by: string) => {
     .select()
     .single();
 
-  console.log("createHausSwipe res", error);
-
   return error;
 };
 

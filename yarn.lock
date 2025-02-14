@@ -12398,6 +12398,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "se-2@workspace:."
   dependencies:
+    "@safe-global/api-kit": ^2.5.9
     "@safe-global/protocol-kit": ^5.2.1
     "@safe-global/sdk-starter-kit": ^1.1.5
     "@supabase/ssr": ^0.5.2

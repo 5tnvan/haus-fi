@@ -5,7 +5,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { hardhat } from "viem/chains";
 import { Bars3Icon } from "@heroicons/react/24/outline";
-import { CurrencyDollarIcon, CursorArrowRippleIcon, HeartIcon } from "@heroicons/react/24/solid";
+import { BuildingStorefrontIcon, CursorArrowRippleIcon, HeartIcon } from "@heroicons/react/24/solid";
 import { FaucetButton, RainbowKitCustomConnectButton } from "~~/components/scaffold-eth";
 import { useOutsideClick, useTargetNetwork } from "~~/hooks/scaffold-eth";
 
@@ -19,7 +19,7 @@ export const menuLinks: HeaderMenuLink[] = [
   {
     label: "My HAUS",
     href: "/haus",
-    icon: <CurrencyDollarIcon className="h-4 w-4" />,
+    icon: <BuildingStorefrontIcon className="h-4 w-4" />,
   },
   {
     label: "Swipe-to-Match",
@@ -30,6 +30,11 @@ export const menuLinks: HeaderMenuLink[] = [
     label: "My Matches",
     href: "/matches",
     icon: <HeartIcon className="h-4 w-4" />,
+  },
+  {
+    label: "AI Agent",
+    href: "/aiagent",
+    icon: "🤖",
   },
   {
     label: "My Likes",

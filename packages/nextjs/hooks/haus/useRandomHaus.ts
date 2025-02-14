@@ -61,7 +61,7 @@ export const useRandomHaus = (limit: number) => {
     if (connectedAddress) {
       fetchFeed();
     }
-  }, [connectedAddress, page, triggerRefetch, fetchFeed]);
+  }, [connectedAddress, page, triggerRefetch]);
 
   return { loading, feed, fetchMore, refetch };
 };
