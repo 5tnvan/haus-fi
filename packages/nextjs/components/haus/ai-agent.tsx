@@ -111,6 +111,7 @@ export const AIAgent = () => {
       }
       setIsProp1Loading(false);
     } catch (error) {
+      setIsProp1Loading(false);
       alert(error);
     }
   };
@@ -165,8 +166,8 @@ export const AIAgent = () => {
       setProposedSuccessLink(link);
       setIsProp2Loading(false);
     } catch (error) {
-      alert(error);
       setIsProp2Loading(false);
+      alert(error);
     }
   };
 
