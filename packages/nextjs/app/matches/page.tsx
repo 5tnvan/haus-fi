@@ -56,9 +56,9 @@ const Matches: NextPage = () => {
 
       const chainPrefix = "basesep";
 
-      const link = `https://app.safe.global/transactions/tx?id=multisig_${transactionResult.safeAddress}_${transactionResult.safeTxHash}&safe=${chainPrefix}:${transactionResult.safeAddress}`;
-
       if (transactionResult) {
+        console.log("link", transactionResult);
+        const link = `https://app.safe.global/transactions/tx?id=multisig_${transactionResult.safeAddress}_${transactionResult.transactions?.safeTxHash}&safe=${chainPrefix}:${transactionResult.safeAddress}`;
         console.log("link", link);
         setSuccessMsg(transactionResult.status);
         setSuccessLink(link);
