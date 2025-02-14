@@ -10,7 +10,7 @@
 ### 🧪 How does it work?  
 
 #### 🎥 Demo Video  
-[![Watch the Demo](https://img.youtube.com/vi/CSl0ybe18pc/maxresdefault.jpg)](https://www.youtube.com/watch?v=CSl0ybe18pc)  
+[![HausFi AI Demo](https://img.youtube.com/vi/CSl0ybe18pc/hqdefault.jpg)](https://youtu.be/CSl0ybe18pc)
 
 *(Click the image or [here](https://www.youtube.com/watch?v=CSl0ybe18pc) to watch!)*  
 
@@ -32,7 +32,7 @@
 ---
 
 ### 🖼️ Preview  
-<a href="https://ibb.co/gZhYfzwQ"><img src="https://i.ibb.co/yF72ZW5K/haus-1.png" alt="haus-1" border="0" /></a>
+<img src="https://i.ibb.co/qYV6ck9h/haus-1.png" alt="haus-1" border="0" />
 ---
 
 ## 🔧 Requirements  
