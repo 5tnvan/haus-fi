@@ -47,6 +47,7 @@ const Matches: NextPage = () => {
 
       const transaction = await safeClient.createAddOwnerTransaction({
         ownerAddress: multisig_id,
+        threshold: 2,
       });
 
       const transactionResult = await safeClient.send({ transactions: [transaction] });

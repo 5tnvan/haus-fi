@@ -5,6 +5,7 @@ import SafeApiKit from "@safe-global/api-kit";
 import Safe from "@safe-global/protocol-kit";
 import { baseSepolia } from "viem/chains";
 import { useAccount, useWalletClient } from "wagmi";
+import { PencilIcon } from "@heroicons/react/24/solid";
 import { useHaus } from "~~/hooks/haus/useHaus";
 import { useMultisigOwners } from "~~/hooks/haus/useOwners";
 import { useGlobalState } from "~~/services/store/store";
@@ -15,8 +16,22 @@ export const AIAgent = () => {
   const { haus, totalAssetValue } = useHaus();
   const { address: connectedAddress } = useAccount();
   const { data: walletClient } = useWalletClient();
-  const [success, setSuccess] = useState<boolean>(false);
-  const [successLink, setSuccessLink] = useState<string | null>(null);
+  const [proposedSuccess, setProposedSuccess] = useState<string | null>(null);
+  const [proposedSuccessLink, setProposedSuccessLink] = useState<string | null>(null);
+  const [executeSuccess, setExecuteSuccess] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null);
+  const [amount, setAmount] = useState(25);
+  const [isEditing, setIsEditing] = useState(false);
+  const [isProp1Loading, setIsProp1Loading] = useState(false);
+  const [isProp2Loading, setIsProp2Loading] = useState(false);
+
+  const toggleEditing = () => {
+    setIsEditing(!isEditing); // Toggle the editing state
+  };
+
+  const handleAmountChange = (e: any) => {
+    setAmount(e.target.value);
+  };
 
   // Ensure haus has a valid value before trying to access haus[0]
   const hausData = haus && haus[0] ? haus[0] : null;
@@ -25,9 +40,10 @@ export const AIAgent = () => {
   // Use the custom hook to get owners, loading, and error states
   const { loading, owners } = useMultisigOwners(multisigId, walletClient);
 
-  const handlePropose1 = async () => {
+  const handlePropose1 = async (amount: number) => {
     if (totalAssetValue === 0) return;
     try {
+      setIsProp1Loading(true);
       const apiKit = new SafeApiKit({
         chainId: 84532n,
       });
@@ -38,17 +54,15 @@ export const AIAgent = () => {
         safeAddress: multisigId,
       });
 
-      const onedollar = calculateEthFromUsd(1, nativeCurrencyPrice);
-      const valueInWei = BigInt(Math.floor(onedollar * 10 ** 18));
-
-      console.log("onedollar", onedollar);
+      const proposedAmount = calculateEthFromUsd(amount, nativeCurrencyPrice);
+      const proposedAmountInWei = BigInt(Math.floor(proposedAmount * 10 ** 18));
 
       const tx = await protocolKit.createTransaction({
         transactions: [
           {
             to: process.env.NEXT_PUBLIC_DEPLOYER_PUBLIC_KEY || "",
             data: "0x",
-            value: valueInWei.toString(),
+            value: proposedAmountInWei.toString(),
           },
         ],
       });
@@ -56,22 +70,46 @@ export const AIAgent = () => {
       const safeTxHash = await protocolKit.getTransactionHash(tx);
       const signature = await protocolKit.signHash(safeTxHash);
 
-      await apiKit.proposeTransaction({
-        safeAddress: multisigId,
-        safeTransactionData: tx.data,
-        safeTxHash,
-        senderSignature: signature.data,
-        senderAddress: process.env.NEXT_PUBLIC_DEPLOYER_PUBLIC_KEY || "",
-      });
+      //security check, max 20% of the TAV
+      const maxAllowedAmount = totalAssetValue * 0.2;
 
-      console.log("Proposed a transaction with Safe:", multisigId);
-      console.log("- safeTxHash:", safeTxHash);
-      console.log("- Sender:", process.env.NEXT_PUBLIC_DEPLOYER_PUBLIC_KEY);
-      console.log("- Sender signature:", signature.data);
+      if (amount <= maxAllowedAmount) {
+        await apiKit.proposeTransaction({
+          safeAddress: multisigId,
+          safeTransactionData: tx.data,
+          safeTxHash,
+          senderSignature: signature.data,
+          senderAddress: process.env.NEXT_PUBLIC_DEPLOYER_PUBLIC_KEY || "",
+        });
+        console.log("Proposed a transaction with Safe:", multisigId);
+        console.log("- safeTxHash:", safeTxHash);
+        console.log("- Sender:", process.env.NEXT_PUBLIC_DEPLOYER_PUBLIC_KEY);
+        console.log("- Sender signature:", signature.data);
 
-      const link = `https://app.safe.global/transactions/tx?safe=basesep:${multisigId}&id=multisig_${multisigId}_${safeTxHash}`;
-      setSuccess(true);
-      setSuccessLink(link);
+        const link = `https://app.safe.global/transactions/tx?safe=basesep:${multisigId}&id=multisig_${multisigId}_${safeTxHash}`;
+        setProposedSuccess("Proposal successfully created");
+        setProposedSuccessLink(link);
+      } else {
+        setError(`Security check failed: Amount exceeds $${maxAllowedAmount}`);
+        setIsProp1Loading(false);
+        return;
+      }
+
+      // Get pending transactions that need a signature
+      const pendingTransactions = await apiKit.getPendingTransactions(multisigId);
+      const transaction = pendingTransactions.results[0];
+
+      try {
+        await protocolKit.executeTransaction(transaction);
+        setExecuteSuccess("Transaction executed successfully.");
+      } catch (error) {
+        if (error instanceof Error) {
+          setError(error.message); // Extract error message if it's an Error object
+        } else {
+          setError(String(error)); // Convert unknown error to string
+        }
+      }
+      setIsProp1Loading(false);
     } catch (error) {
       alert(error);
     }
@@ -80,6 +118,7 @@ export const AIAgent = () => {
   const handlePropose2 = async () => {
     if (totalAssetValue === 0) return;
     try {
+      setIsProp2Loading(true);
       const apiKit = new SafeApiKit({
         chainId: 84532n,
       });
@@ -122,10 +161,12 @@ export const AIAgent = () => {
       console.log("- Sender signature:", signature.data);
 
       const link = `https://app.safe.global/transactions/tx?safe=basesep:${multisigId}&id=multisig_${multisigId}_${safeTxHash}`;
-      setSuccess(true);
-      setSuccessLink(link);
+      setProposedSuccess("Proposal successfully created");
+      setProposedSuccessLink(link);
+      setIsProp2Loading(false);
     } catch (error) {
       alert(error);
+      setIsProp2Loading(false);
     }
   };
 
@@ -151,15 +192,39 @@ export const AIAgent = () => {
             </div>
 
             <p className="text-sm mb-2">{`Here's`} what I can do for you...</p>
-            {/* Create Haus Button */}
-            <button
-              className="flex flex-row btn btn-success rounded-lg items-center justify-between flex-grow w-full mb-2"
-              onClick={handlePropose1}
-            >
-              <img src="/favicon.png" className="w-4 h-4 rounded-lg" alt="Haus Profile" />
-              Propose a $1 transaction to self
-              <span></span>
-            </button>
+            {/* Proposal & Exe Buttons */}
+            <div className="flex flex-row">
+              <button
+                className="flex flex-row btn btn-success rounded-lg items-center justify-between flex-grow mb-2 w-2/3"
+                onClick={() => handlePropose1(amount)}
+              >
+                <img src="/favicon.png" className="w-4 h-4 rounded-lg" alt="Haus Profile" />
+                {/* Amount input field */}
+                Send ${amount} to AI Agent
+                {isProp1Loading ? <span className="loading loading-spinner loading-xs"></span> : <span></span>}
+              </button>
+              <button className="rounded-lg bg-base-200 ml-2 mb-2 w-1/3">
+                {isEditing ? (
+                  <div className="flex flex-row justify-between px-4">
+                    <span></span>
+                    <input
+                      type="number"
+                      value={amount}
+                      onChange={handleAmountChange}
+                      placeholder="Enter amount"
+                      className="w-10 text-center mx-2 bg-base-200"
+                      min="0"
+                    />
+                    <PencilIcon width={12} onClick={toggleEditing} />
+                  </div>
+                ) : (
+                  <div className="flex flex-row justify-center items-center">
+                    <PencilIcon width={12} onClick={toggleEditing} />
+                  </div>
+                )}
+              </button>
+            </div>
+
             <button
               className="flex flex-row btn btn-success rounded-lg items-center justify-between flex-grow w-full mb-2"
               onClick={handlePropose2}
@@ -167,6 +232,7 @@ export const AIAgent = () => {
               <img src="/favicon.png" className="w-4 h-4 rounded-lg" alt="Haus Profile" />
               Propose 25% distribution of TAV <br />
               to human owners
+              {isProp2Loading ? <span className="loading loading-spinner loading-xs"></span> : <span></span>}
               <span></span>
             </button>
             <div className="flex flex-row items-center justify-between text-sm p-5 bg-base-200 rounded-xl">
@@ -192,26 +258,44 @@ export const AIAgent = () => {
             {loading && <p>Loading owners...</p>}
 
             <div className="toast toast-end z-20">
-              {successLink && (
-                <div className="alert alert-info">
-                  <span className="cursor-pointer" onClick={() => setSuccessLink(null)}>
-                    Go to{" "}
-                    <a href={successLink} className="btn btn-secondary btn-sm" target="_blank">
-                      <img src="/safe.png" width={14} />
-                      Safe
-                    </a>{" "}
-                    proposal
-                  </span>
-                  <span className="cursor-pointer" onClick={() => setSuccessLink(null)}>
+              {error && (
+                <div className="alert alert-error">
+                  <span>{error}</span>
+                  <span className="cursor-pointer" onClick={() => setError(null)}>
                     [x]
                   </span>
                 </div>
               )}
 
-              {success && (
+              {executeSuccess && (
+                <div className="alert alert-success">
+                  <span>{executeSuccess}</span>
+                  <span className="cursor-pointer" onClick={() => setExecuteSuccess(null)}>
+                    [x]
+                  </span>
+                </div>
+              )}
+
+              {proposedSuccessLink && (
+                <div className="alert alert-info">
+                  <span className="cursor-pointer" onClick={() => setProposedSuccessLink(null)}>
+                    Go to{" "}
+                    <a href={proposedSuccessLink} className="btn btn-secondary btn-sm" target="_blank">
+                      <img src="/safe.png" width={14} />
+                      Safe
+                    </a>{" "}
+                    proposal
+                  </span>
+                  <span className="cursor-pointer" onClick={() => setProposedSuccessLink(null)}>
+                    [x]
+                  </span>
+                </div>
+              )}
+
+              {proposedSuccess && (
                 <div className="alert alert-success">
                   <span>Proposal successfully created</span>
-                  <span className="cursor-pointer" onClick={() => setSuccess(false)}>
+                  <span className="cursor-pointer" onClick={() => setProposedSuccess(null)}>
                     [x]
                   </span>
                 </div>
