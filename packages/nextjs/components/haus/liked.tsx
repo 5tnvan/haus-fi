@@ -19,7 +19,7 @@ const Liked: React.FC<LikedProps> = ({ liked }) => {
   return (
     <div key={liked.id} className="card bg-base-200 w-96 shadow-xl">
       <figure>
-        <img src={liked.haus.profile_pic} alt={liked.haus.title} className="w-full h-48 object-cover" />
+        <Image src={liked.haus.profile_pic} alt={liked.haus.title} className="w-full h-48 object-cover" />
       </figure>
       <div className="flex flex-col gap-3 p-4">
         <div className="text-lg font-bold flex flex-row items-center justify-between">
@@ -39,7 +39,7 @@ const Liked: React.FC<LikedProps> = ({ liked }) => {
             className="btn btn-secondary btn-sm"
             target="_blank"
           >
-            <img src="/safe.png" width={14} />
+            <Image src="/safe.png" width={14} height={14} alt="safe" />
             Safe
           </a>
         </div>

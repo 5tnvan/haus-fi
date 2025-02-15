@@ -19,7 +19,7 @@ const Match = ({ match, haus, hausOwners, matchedOwners, onOwnerApproved }: any)
       <div className="flex flex-row">
         <div className="avatar">
           <div className="w-24 rounded">
-            <img src={haus[0].haus.profile_pic} alt={haus[0].haus.title} className="w-16 h-16 rounded-full" />
+            <Image src={haus[0].haus.profile_pic} alt={haus[0].haus.title} className="w-16 h-16 rounded-full" />
           </div>
         </div>
         <span>
@@ -27,7 +27,7 @@ const Match = ({ match, haus, hausOwners, matchedOwners, onOwnerApproved }: any)
         </span>
         <div className="avatar">
           <div className="w-24 rounded">
-            <img src={match.matchHaus.profile_pic} alt={match.matchHaus.title} className="w-16 h-16 rounded-full" />
+            <Image src={match.matchHaus.profile_pic} alt={match.matchHaus.title} className="w-16 h-16 rounded-full" />
           </div>
         </div>
       </div>
@@ -66,7 +66,7 @@ const Match = ({ match, haus, hausOwners, matchedOwners, onOwnerApproved }: any)
         </div>
 
         <div className="w-14 h-14 border-secondary border-2 rounded-full">
-          <img src={match.matchHaus.profile_pic} alt={match.matchHaus.title} className="w-14 h-14 rounded-full" />
+          <Image src={match.matchHaus.profile_pic} alt={match.matchHaus.title} className="w-14 h-14 rounded-full" />
         </div>
       </div>
 
@@ -89,7 +89,7 @@ const Match = ({ match, haus, hausOwners, matchedOwners, onOwnerApproved }: any)
         </div>
 
         <div className="w-14 h-14 border-secondary border-2 rounded-full">
-          <img src={haus[0].haus.profile_pic} alt={haus[0].haus.title} className="w-14 h-14 rounded-full" />
+          <Image src={haus[0].haus.profile_pic} alt={haus[0].haus.title} className="w-14 h-14 rounded-full" />
         </div>
       </div>
 

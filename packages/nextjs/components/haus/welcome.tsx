@@ -1,4 +1,5 @@
 import React from "react";
+import Image from "next/image";
 import { hardhat } from "viem/chains";
 import { FaucetButton, RainbowKitCustomConnectButton } from "~~/components/scaffold-eth";
 import { useTargetNetwork } from "~~/hooks/scaffold-eth";
@@ -13,7 +14,7 @@ export const Welcome = () => {
   return (
     <div className="flex items-center flex-col flex-grow">
       <div className="w-full h-full object-cover">
-        <img src="/favicon.png" className="w-full" />
+        <Image src="/favicon.png" className="w-full" height="400" width="400" alt={""} />
       </div>
 
       <div className="p-5">

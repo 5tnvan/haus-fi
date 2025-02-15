@@ -1,4 +1,5 @@
 import React from "react";
+import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { Address } from "../scaffold-eth/Address/Address";
 import MultisigOwners from "./multisig-owners";
@@ -44,7 +45,13 @@ export const FundHaus = () => {
               {hausData?.haus?.title}
             </a>
             <div className="w-full mt-2 mb-4 object-cover">
-              <img src={hausData?.haus?.profile_pic} className="w-full rounded-lg" alt="Haus Profile" />
+              <Image
+                src={hausData?.haus?.profile_pic}
+                className="w-full rounded-lg"
+                alt="Haus Profile"
+                width={250}
+                height={250}
+              />
             </div>
 
             {/* Display total asset value */}
@@ -68,7 +75,7 @@ export const FundHaus = () => {
                 className="btn btn-secondary btn-sm"
                 target="_blank"
               >
-                <img src="/safe.png" width={14} />
+                <Image src="/safe.png" width={14} height={14} alt={"safe"} />
                 Safe
               </a>
             </div>

@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import Image from "next/image";
 import { FundHaus } from "./fund-haus";
 import Safe, { SafeAccountConfig, getSafeAddressFromDeploymentTx } from "@safe-global/protocol-kit";
 import { SafeVersion } from "@safe-global/types-kit";
@@ -207,7 +208,13 @@ export const CreateHaus = () => {
             <label className="flex flex-col items-center cursor-pointer">
               <div className="w-24 h-24 rounded-full border-2 border-base-300 bg-base-200 flex items-center justify-center overflow-hidden">
                 {profilePicPreview ? (
-                  <img src={profilePicPreview} alt="Profile" className="w-full h-full object-cover" />
+                  <Image
+                    src={profilePicPreview}
+                    alt="Profile"
+                    className="w-full h-full object-cover"
+                    width={250}
+                    height={250}
+                  />
                 ) : (
                   <span className="text-base-300">+</span>
                 )}

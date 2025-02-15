@@ -58,7 +58,11 @@ export const SwipeHaus = ({ hausData }: { hausData: HausData }) => {
               )}
             </div>
             <div className="w-full object-cover">
-              <img src={hausData.profile_pic} className="w-full h-[300px] object-cover rounded-lg" alt="Haus Profile" />
+              <Image
+                src={hausData.profile_pic}
+                className="w-full h-[300px] object-cover rounded-lg"
+                alt="Haus Profile"
+              />
             </div>
 
             <div className="flex flex-row gap-2 items-center text-lg font-base">
@@ -81,7 +85,7 @@ export const SwipeHaus = ({ hausData }: { hausData: HausData }) => {
                 className="btn btn-secondary btn-sm"
                 target="_blank"
               >
-                <img src="/safe.png" width={14} />
+                <Image src="/safe.png" width={14} height={14} alt="safe" />
                 Safe
               </a>
             </div>

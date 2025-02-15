@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import Image from "next/image";
 import { Address } from "../scaffold-eth/Address/Address";
 import MultisigOwners from "./multisig-owners";
 import SafeApiKit from "@safe-global/api-kit";
@@ -181,7 +182,13 @@ export const AIAgent = () => {
               Hi, {`I'm`} Agent X...
             </a>
             <div className="w-full mt-2 mb-4 object-cover">
-              <img src="/Gjl7ldeW4AAGfAN.jpeg" className="w-full rounded-lg" alt="Haus Profile" />
+              <Image
+                src="/Gjl7ldeW4AAGfAN.jpeg"
+                className="w-full rounded-lg"
+                alt="Haus Profile"
+                width={200}
+                height={200}
+              />
             </div>
 
             {/* Display total asset value */}
@@ -200,7 +207,7 @@ export const AIAgent = () => {
                 className="flex flex-row btn btn-success rounded-lg items-center justify-between flex-grow mb-2 w-2/3"
                 onClick={() => handlePropose1(amount)}
               >
-                <img src="/favicon.png" className="w-4 h-4 rounded-lg" alt="Haus Profile" />
+                <Image src="/favicon.png" className="w-4 h-4 rounded-lg" alt="Haus Profile" width={100} height={100} />
                 {/* Amount input field */}
                 Send ${amount} to AI Agent
                 {isProp1Loading ? <span className="loading loading-spinner loading-xs"></span> : <span></span>}
@@ -231,7 +238,7 @@ export const AIAgent = () => {
               className="flex flex-row btn btn-success rounded-lg items-center justify-between flex-grow w-full mb-2"
               onClick={handlePropose2}
             >
-              <img src="/favicon.png" className="w-4 h-4 rounded-lg" alt="Haus Profile" />
+              <Image src="/favicon.png" className="w-4 h-4 rounded-lg" alt="favicon" width={100} height={100} />
               Propose 25% distribution of TAV <br />
               to human owners
               {isProp2Loading ? <span className="loading loading-spinner loading-xs"></span> : <span></span>}
@@ -248,7 +255,7 @@ export const AIAgent = () => {
                 className="btn btn-secondary btn-sm"
                 target="_blank"
               >
-                <img src="/safe.png" width={14} />
+                <Image src="/safe.png" alt="safe" width={14} height={14} />
                 Safe
               </a>
             </div>
@@ -292,7 +299,7 @@ export const AIAgent = () => {
                   <span className="cursor-pointer" onClick={() => setProposedSuccessLink(null)}>
                     Go to{" "}
                     <a href={proposedSuccessLink} className="btn btn-secondary btn-sm" target="_blank">
-                      <img src="/safe.png" width={14} />
+                      <Image src="/safe.png" width={14} height={14} alt="Safe" />
                       Safe
                     </a>{" "}
                     transaction

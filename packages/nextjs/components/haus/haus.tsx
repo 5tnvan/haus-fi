@@ -51,7 +51,13 @@ export const Haus = ({
             )}
           </div>
           <div className="w-full object-cover">
-            <img src={haus.profile_pic} className="w-full h-[300px] object-cover rounded-lg" alt="Haus Profile" />
+            <Image
+              src={haus.profile_pic}
+              className="w-full h-[300px] object-cover rounded-lg"
+              alt="Haus Profile"
+              width={14}
+              height={14}
+            />
           </div>
 
           <div className="flex flex-row gap-2 items-center text-lg font-base">
@@ -74,7 +80,7 @@ export const Haus = ({
               className="btn btn-secondary btn-sm"
               target="_blank"
             >
-              <img src="/safe.png" width={14} />
+              <Image src="/safe.png" alt="Safe" width={14} height={14} />
               Safe
             </a>
           </div>

@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Image from "next/image";
 import { createSafeClient } from "@safe-global/sdk-starter-kit";
 import type { NextPage } from "next";
 import { useAccount, useWalletClient } from "wagmi";
@@ -122,7 +123,7 @@ const Matches: NextPage = () => {
             <span className="cursor-pointer" onClick={() => setSuccessLink(null)}>
               Go to{" "}
               <a href={successLink} className="btn btn-secondary btn-sm" target="_blank">
-                <img src="/safe.png" width={14} />
+                <Image src="/safe.png" alt="Safe" width={14} height={14} />
                 Safe
               </a>{" "}
               transaction
